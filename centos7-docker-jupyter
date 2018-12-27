@@ -1,0 +1,17 @@
+yum update -y
+yum install -y yum-utils device-mapper-persistent-data lvm2
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum makecache fast
+yum install docker-ce
+systemctl start docker
+docker pull jupyter/datascience-notebook
+docker run -d --name notebook -p 8888:8888 jupyter/datascience-notebook
+docker exec -it notebook /bin/bash
+
+python -c 'from notebook.auth import passwd;print(passwd())'
+パスワード入力すると、ハッシュ値が表示されるのでメモ
+exit
+
+docker stop notebook
+docker rm notebook
+docker run -d --name notebook -p 8888:8888 jupyter/datascience-notebook --NotebookApp.password='メモったハッシュ値(sha1から)'
